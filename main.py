@@ -26,6 +26,9 @@ while True:  # isRun:
             exit()
             # pygame.quit()
             # isRun = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            x = pygame.mouse.get_pos()[0] - 25
+            y = pygame.mouse.get_pos()[1] - 25
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT]:
@@ -37,9 +40,7 @@ while True:  # isRun:
     if keys[pygame.K_DOWN]:
         y += speed
 
-
-
     screen.fill(WHITE)
-    pygame.draw.rect(screen, BLACK, (x, y, 50, 100))
+    pygame.draw.rect(screen, BLACK, (x, y, 50, 50))
     pygame.display.update()
     clock.tick(FPS)
