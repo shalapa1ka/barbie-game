@@ -44,3 +44,4 @@ while True:  # isRun:
     pygame.draw.rect(screen, BLACK, (x, y, 50, 50))
     pygame.display.update()
     clock.tick(FPS)
+    print('test')
