@@ -1,5 +1,4 @@
 import pygame
-from math import pi
 
 pygame.init()
 
@@ -15,7 +14,7 @@ RED = (255, 0, 0)
 x = W // 2
 y = H // 2
 speed = 4
-jump = 20
+jump = 10
 move = jump + 1
 # ***** draw main scene
 screen = pygame.display.set_mode((W, H))
@@ -38,23 +37,34 @@ while True:  # isRun:
             # pygame.quit()
             # isRun = False
     keys = pygame.key.get_pressed()
+    mouse_click = pygame.mouse.get_pressed(3)
     # ***** walk
     if keys[pygame.K_LEFT]:
         rect_hero.left -= speed
     if keys[pygame.K_RIGHT]:
         rect_hero.left += speed
+    # drag hero
+    if mouse_click[0] == 1 and rect_hero.collidepoint(pygame.mouse.get_pos()):
+        if rect_hero.bottom > H - rect_ground.height:
+            rect_hero.bottom = H - rect_ground.height
+        else:
+            rect_hero.left = pygame.mouse.get_pos()[0] - 25
+            rect_hero.top = pygame.mouse.get_pos()[1] - 25
+
     # *****
+    # gravity
+    if rect_hero.bottom + move < H - ground.get_height():
+        rect_hero.bottom += move // 2
+    else:
+        rect_hero.bottom = H - ground.get_height()
+        move = jump + 1
     # ***** jump
     if keys[pygame.K_SPACE] and H - ground.get_height() == rect_hero.bottom:
         move = -jump
-    if move <= jump:
-        if rect_hero.bottom + move < H - ground.get_height():
-            rect_hero.bottom += move
-            if move < jump:
-                move += 1
-        else:
-            rect_hero.bottom = H - ground.get_height()
-            move = jump + 1
+    if move < jump:
+        move += .25
+    else:
+        move = jump + 1
     # *****
     screen.fill(BLACK)
     screen.blit(ground, rect_ground)
