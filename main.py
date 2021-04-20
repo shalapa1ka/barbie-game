@@ -16,6 +16,7 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # init
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 pygame.init()
 pygame.time.set_timer(pygame.USEREVENT, TIME)
 
@@ -23,7 +24,7 @@ pygame.time.set_timer(pygame.USEREVENT, TIME)
 screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption('Блядки')
 # create hero
-hero = Hero(W // 2, H - 100, 5, 5, 'barbie.png')
+hero = Hero(W // 2, H - 100, 5, 1, 'barbie.png')
 # sky
 sky = pygame.image.load('images/background.jpg').convert()
 sky = pygame.transform.scale(sky, (W, H))
@@ -43,7 +44,12 @@ for i in range(hero.lives):
     hearts_list.append(heart.copy())
 # game over
 game_over = pygame.image.load("images/over.png").convert_alpha()
-
+# sounds
+main_theme = pygame.mixer.Sound('sounds/dior.wav')
+game_over_sound = pygame.mixer.Sound('sounds/opa.wav')
+game_over_sound.set_volume(0.2)
+main_theme.set_volume(0.1)
+main_theme.play()
 # create balls group
 balls = pygame.sprite.Group()
 
@@ -91,6 +97,8 @@ while True:  # isRun:
         screen.blit(game_over, (over_x, over_y))
         screen.blit(over_text, (over_text_x, over_text_y))
         pygame.display.flip()  # Add this.
+        main_theme.stop()
+        game_over_sound.play()
         time.sleep(3)
         os._exit(1)
         pygame.quit()
