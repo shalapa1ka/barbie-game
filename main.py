@@ -1,16 +1,20 @@
 import pygame
 from hero import Hero
+from ball import Ball
+from random import randint
 
 pygame.init()
+pygame.time.set_timer(pygame.USEREVENT, 2000)
 
 # ***** const
 FPS = 120
-W, H = 800, 600
+W, H = 1000, 1000
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+
 
 # ***** draw main scene
 screen = pygame.display.set_mode((W, H))
@@ -25,10 +29,22 @@ rect_ground = ground.get_rect(bottom=H)
 # create hero
 Mario = Hero(W // 2, H - 100, 5, 'barbie.png')
 
+# create balls group
+balls = pygame.sprite.Group()
+
+
+def createBall(group):
+    x = randint(20, W - 20)
+    speed = randint(1, 3)
+    surf = pygame.image.load('images/ken.png').convert_alpha()
+    surf = pygame.transform.scale(surf, (100, 276)) # 172x470
+    return Ball(x, speed, surf, group)
+
+
+createBall(balls)
+
 clock = pygame.time.Clock()
-screen.blit(sky, (0, 0))
-screen.blit(ground, rect_ground)
-Mario.draw(screen)
+
 
 # isRun = True
 while True:  # isRun:
@@ -37,6 +53,8 @@ while True:  # isRun:
             exit()
             # pygame.quit()
             # isRun = False
+        elif event.type == pygame.USEREVENT:
+            createBall(balls)
     keys = pygame.key.get_pressed()
     mouse_click = pygame.mouse.get_pressed(3)
 
@@ -45,5 +63,7 @@ while True:  # isRun:
     Mario.draw(screen)
     Mario.move(keys)
     Mario.jump(keys, rect_ground)
+    balls.draw(screen)
+    balls.update(H)
     pygame.display.update()
     clock.tick(FPS)
