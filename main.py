@@ -25,6 +25,10 @@ sky = pygame.transform.scale(sky, (W, H))
 ground = pygame.image.load('images/dirt.jpg').convert()
 ground = pygame.transform.scale(ground, (W, 100))
 rect_ground = ground.get_rect(bottom=H)
+# score
+score = pygame.image.load('images/score.png').convert_alpha()
+score = pygame.transform.scale(score, (200, 100))
+font = pygame.font.SysFont('opensans', 30)
 # create hero
 hero = Hero(W // 2, H - 100, 5, 'barbie.png')
 
@@ -65,15 +69,20 @@ while True:  # isRun:
     keys = pygame.key.get_pressed()
     mouse_click = pygame.mouse.get_pressed(3)
 
+    screen.blit(sky, (0, 0))
+    screen.blit(score, (10, 10))
+    sc_text = font.render(str(game_score), True, WHITE)
+
+    text_x = score.get_rect().center[0] - sc_text.get_width() // 2 + 10
+    text_y = score.get_rect().center[1] - sc_text.get_height() // 2 + 10
+    screen.blit(sc_text, (text_x, text_y))
+    screen.blit(ground, rect_ground)
     hero.draw(screen)
     hero.move(keys)
     hero.jump(keys, rect_ground)
     balls.draw(screen)
     balls.update(H)
     collideBalls()
-
-    screen.blit(sky, (0, 0))
-    screen.blit(ground, rect_ground)
 
     pygame.display.update()
     clock.tick(FPS)
