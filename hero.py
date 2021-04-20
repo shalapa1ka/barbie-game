@@ -2,7 +2,7 @@ import pygame
 
 
 class Hero:
-    def __init__(self, x, y, speed, path):
+    def __init__(self, x, y, speed, hearts, path):
         self.speed_x = speed
         self.speed_y = 15
         self.image = pygame.image.load('images/' + path).convert_alpha()
@@ -10,6 +10,7 @@ class Hero:
         self.rect = self.image.get_rect(center=(x, 0), bottom=y)
         self.isJump = False
         self.isDrag = False
+        self.lives = hearts
 
     def move(self, keys):
         if keys[pygame.K_LEFT]:

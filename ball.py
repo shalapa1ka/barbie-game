@@ -9,8 +9,9 @@ class Ball(pygame.sprite.Sprite):
         self.speed = speed
         self.add(group)
 
-    def update(self, *args):
+    def update(self, heats, *args):
         if self.rect.y < args[0] - 20:
             self.rect.y += self.speed
         else:
             self.kill()
+            heats.pop()
