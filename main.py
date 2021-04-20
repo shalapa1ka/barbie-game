@@ -14,7 +14,7 @@ RED = (255, 0, 0)
 
 # ***** draw main scene
 screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption('my game')
+pygame.display.set_caption('Блядки')
 # sky
 sky = pygame.image.load('images/background.jpg').convert()
 sky = pygame.transform.scale(sky, (W, H))
@@ -23,7 +23,7 @@ ground = pygame.image.load('images/dirt.jpg').convert()
 ground = pygame.transform.scale(ground, (W, 100))
 rect_ground = ground.get_rect(bottom=H)
 # create hero
-Mario = Hero(W // 2, H - 100, 5, 'mario2.png')
+Mario = Hero(W // 2, H - 100, 5, 'barbie.png')
 
 clock = pygame.time.Clock()
 screen.blit(sky, (0, 0))

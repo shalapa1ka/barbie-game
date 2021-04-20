@@ -6,9 +6,10 @@ class Hero:
         self.speed_x = speed
         self.speed_y = 15
         self.image = pygame.image.load('images/' + path).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (50, 70))
+        self.image = pygame.transform.scale(self.image, (100, 237))  # 252x589
         self.rect = self.image.get_rect(center=(x, 0), bottom=y)
         self.isJump = False
+        self.isDrag = False
 
     def move(self, keys):
         if keys[pygame.K_LEFT]:
@@ -22,7 +23,8 @@ class Hero:
         if self.isJump:
             self.rect.bottom -= self.speed_y
             self.speed_y -= .5
-            if self.rect.bottom == ground.top:
+            if self.rect.bottom >= ground.top:
+                self.rect.bottom = ground.top
                 self.speed_y = 15
                 self.isJump = False
 
