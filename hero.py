@@ -31,3 +31,7 @@ class Hero:
 
     def draw(self, sc):
         sc.blit(self.image, self.rect)
+
+    def speed_up(self):
+        self.speed_x += 1
+        self.speed_y += 1
