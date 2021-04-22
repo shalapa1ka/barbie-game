@@ -30,7 +30,7 @@ font = pygame.font.SysFont('arial', 30, True)
 
 # draw main scene
 screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption('Блядки')
+pygame.display.set_caption('Barbie')
 
 # button draw
 easy_btn = Button((133, 200), (200, H // 2), 'Easy', GREEN)
@@ -97,8 +97,10 @@ def get_difficulty_level(choice=None):
                     choice = normal_btn.on_click()
                 elif hard_btn.rect.collidepoint(pygame.mouse.get_pos()):
                     choice = hard_btn.on_click()
+            elif event.type == pygame.QUIT:
+                exit()
     difficulty_dict = {
-        'Easy': {'speed': 10, 'hearts': 1000},
+        'Easy': {'speed': 10, 'hearts': 5},
         'Normal': {'speed': 7, 'hearts': 3},
         'Dior': {'speed': 5, 'hearts': 1}
     }
