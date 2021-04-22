@@ -5,7 +5,7 @@ from hero import Hero
 from ball import Ball
 from random import randint
 
-# ***** const
+# const
 FPS = 120
 TIME = 2000
 W, H = 1000, 1000
@@ -16,40 +16,61 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # init
-pygame.mixer.pre_init(44100, 16, 2, 4096)
 pygame.init()
 pygame.time.set_timer(pygame.USEREVENT, TIME)
 
-# ***** draw main scene
+# params
+game_score = tmp_score = 0
+min_speed = 1
+max_speed = 3
+clock = pygame.time.Clock()
+font = pygame.font.SysFont('arial', 30, True)
+
+# draw main scene
 screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption('Блядки')
+
+# difficulty choice
+easy = pygame.Surface()
+rect_easy = easy.get_rect(center=(W // 2 - 150, H // 2))
+easy_text = font.render('EASY', True, WHITE)
+easy.fill(WHITE)
+screen.blit(easy, rect_easy)
+time.sleep(5)
+
 # create hero
 hero = Hero(W // 2, H - 100, 5, 1, 'barbie.png')
+
 # sky
 sky = pygame.image.load('images/background.jpg').convert()
 sky = pygame.transform.scale(sky, (W, H))
+
 # ground
 ground = pygame.image.load('images/dirt.jpg').convert()
 ground = pygame.transform.scale(ground, (W, 100))
 rect_ground = ground.get_rect(bottom=H)
+
 # score
 score = pygame.image.load('images/score.png').convert_alpha()
 score = pygame.transform.scale(score, (200, 100))
-font = pygame.font.SysFont('opensans', 30)
+
 # hearts
 heart = pygame.image.load('images/hearts.png').convert_alpha()
 heart = pygame.transform.scale(heart, (100, 100))
 hearts_list = []
 for i in range(hero.lives):
     hearts_list.append(heart.copy())
+
 # game over
 game_over = pygame.image.load("images/over.png").convert_alpha()
+
 # sounds
 main_theme = pygame.mixer.Sound('sounds/dior.wav')
 game_over_sound = pygame.mixer.Sound('sounds/opa.wav')
 game_over_sound.set_volume(0.2)
 main_theme.set_volume(0.1)
 main_theme.play()
+
 # create balls group
 balls = pygame.sprite.Group()
 
@@ -62,12 +83,7 @@ def createBall(group, min_speed, max_speed):
     return Ball(x, speed, surf, group)
 
 
-game_score = 0
-tmp_score = game_score
-min_speed = 1
-max_speed = 3
-
-
+# func for target capture tracking
 def collideBalls():
     global game_score
     for ball in balls:
@@ -76,7 +92,16 @@ def collideBalls():
             ball.kill()
 
 
-clock = pygame.time.Clock()
+def get_difficulty_level(choice):
+    difficulty_dict = {
+        'easy': {'speed': 10, 'hearts': 5},
+        'normal': {'speed': 7, 'hearts': 3},
+        'dior': {'speed': 5, 'hearts': 1}
+    }
+    speed = difficulty_dict[choice]['speed']
+    hearts = difficulty_dict[choice]['hearts']
+    return speed, hearts
+
 
 # isRun = True
 while True:  # isRun:
@@ -111,13 +136,14 @@ while True:  # isRun:
 
     screen.blit(sky, (0, 0))
     screen.blit(score, (10, 10))
+    score_text = font.render(str(game_score), True, WHITE)
+    text_x = score.get_rect().center[0] - score_text.get_width() // 2 + 10
+    text_y = score.get_rect().center[1] - score_text.get_height() // 2 + 10
+    screen.blit(score_text, (text_x, text_y))
+
     for heart in hearts_list:
         screen.blit(heart, (W - 10 - heart.get_width() * (hearts_list.index(heart) + 1), 10))
-    sc_text = font.render(str(game_score), True, WHITE)
 
-    text_x = score.get_rect().center[0] - sc_text.get_width() // 2 + 10
-    text_y = score.get_rect().center[1] - sc_text.get_height() // 2 + 10
-    screen.blit(sc_text, (text_x, text_y))
     screen.blit(ground, rect_ground)
     hero.draw(screen)
     hero.move(keys)
