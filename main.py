@@ -157,7 +157,7 @@ while True:  # isRun:
 
     screen.blit(ground, rect_ground)
     hero.draw(screen)
-    hero.move(keys)
+    hero.move(keys, screen)
     hero.jump(keys, rect_ground)
     balls.draw(screen)
     balls.update(hearts_list, H)

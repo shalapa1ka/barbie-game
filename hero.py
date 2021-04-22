@@ -24,10 +24,11 @@ class Hero:
             hearts_list.append(heart.copy())
         return hearts_list
 
-    def move(self, keys):
-        if keys[pygame.K_LEFT]:
+    def move(self, keys, surf):
+        surf_rect = surf.get_rect()
+        if keys[pygame.K_LEFT] and self.rect.left > surf_rect.left:
             self.rect.left -= self.speed_x
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] and self.rect.right < surf_rect.right:
             self.rect.left += self.speed_x
 
     def jump(self, keys, ground):
