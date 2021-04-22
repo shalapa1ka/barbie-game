@@ -1,4 +1,5 @@
 import pygame
+
 pygame.init()
 font = pygame.font.SysFont('arial', 30, True)
 
@@ -10,9 +11,8 @@ class Button:
         self.color = color
         self.rect.center = pos[0], pos[1]
 
-    def on_click(self, mouse):
-        if self.rect.collidepoint(mouse.get_pos()):
-            return self.name
+    def on_click(self):
+        return self.name
 
     def draw(self, surf):
         pygame.draw.rect(surf, self.color, self.rect)

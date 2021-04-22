@@ -3,6 +3,7 @@ import time
 import os
 from hero import Hero
 from ball import Ball
+from button import Button
 from random import randint
 
 # const
@@ -13,6 +14,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
+ORANGE = (255, 165, 0)
 RED = (255, 0, 0)
 
 # init
@@ -30,16 +32,14 @@ font = pygame.font.SysFont('arial', 30, True)
 screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption('Блядки')
 
-# difficulty choice
-easy = pygame.Surface()
-rect_easy = easy.get_rect(center=(W // 2 - 150, H // 2))
-easy_text = font.render('EASY', True, WHITE)
-easy.fill(WHITE)
-screen.blit(easy, rect_easy)
-time.sleep(5)
-
-# create hero
-hero = Hero(W // 2, H - 100, 5, 1, 'barbie.png')
+# button draw
+easy_btn = Button((133, 200), (200, H // 2), 'Easy', GREEN)
+easy_btn.draw(screen)
+normal_btn = Button((133, 200), (W // 2, H // 2), 'Normal', ORANGE)
+normal_btn.draw(screen)
+hard_btn = Button((133, 200), (W - 200, H // 2), 'Dior', RED)
+hard_btn.draw(screen)
+pygame.display.flip()
 
 # sky
 sky = pygame.image.load('images/background.jpg').convert()
@@ -54,12 +54,8 @@ rect_ground = ground.get_rect(bottom=H)
 score = pygame.image.load('images/score.png').convert_alpha()
 score = pygame.transform.scale(score, (200, 100))
 
-# hearts
-heart = pygame.image.load('images/hearts.png').convert_alpha()
-heart = pygame.transform.scale(heart, (100, 100))
-hearts_list = []
-for i in range(hero.lives):
-    hearts_list.append(heart.copy())
+# create hero
+hero = Hero(W // 2, H - 100, 'barbie.png')
 
 # game over
 game_over = pygame.image.load("images/over.png").convert_alpha()
@@ -69,7 +65,6 @@ main_theme = pygame.mixer.Sound('sounds/dior.wav')
 game_over_sound = pygame.mixer.Sound('sounds/opa.wav')
 game_over_sound.set_volume(0.2)
 main_theme.set_volume(0.1)
-main_theme.play()
 
 # create balls group
 balls = pygame.sprite.Group()
@@ -92,17 +87,32 @@ def collideBalls():
             ball.kill()
 
 
-def get_difficulty_level(choice):
+def get_difficulty_level(choice=None):
+    while choice is None:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if easy_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                    choice = easy_btn.on_click()
+                elif normal_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                    choice = normal_btn.on_click()
+                elif hard_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                    choice = hard_btn.on_click()
     difficulty_dict = {
-        'easy': {'speed': 10, 'hearts': 5},
-        'normal': {'speed': 7, 'hearts': 3},
-        'dior': {'speed': 5, 'hearts': 1}
+        'Easy': {'speed': 10, 'hearts': 1000},
+        'Normal': {'speed': 7, 'hearts': 3},
+        'Dior': {'speed': 5, 'hearts': 1}
     }
     speed = difficulty_dict[choice]['speed']
     hearts = difficulty_dict[choice]['hearts']
     return speed, hearts
 
 
+# set hero speed and lives
+hero.set_difficulty(*get_difficulty_level())
+
+hearts_list = hero.get_hearts_list()
+
+main_theme.play(loops=-1)
 # isRun = True
 while True:  # isRun:
     for event in pygame.event.get():
@@ -131,8 +141,9 @@ while True:  # isRun:
         min_speed += 1
         max_speed += 2
         tmp_score = game_score
+        hero.speed_up()
     keys = pygame.key.get_pressed()
-    mouse_click = pygame.mouse.get_pressed(3)
+    # mouse_click = pygame.mouse.get_pressed(3)
 
     screen.blit(sky, (0, 0))
     screen.blit(score, (10, 10))
