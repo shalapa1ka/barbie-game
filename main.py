@@ -1,4 +1,4 @@
-import pygame
+import pygame as pg
 import time
 import os
 from hero import Hero
@@ -18,19 +18,19 @@ ORANGE = (255, 165, 0)
 RED = (255, 0, 0)
 
 # init
-pygame.init()
-pygame.time.set_timer(pygame.USEREVENT, TIME)
+pg.init()
+pg.time.set_timer(pg.USEREVENT, TIME)
 
 # params
 game_score = tmp_score = 0
 min_speed = 1
 max_speed = 3
-clock = pygame.time.Clock()
-font = pygame.font.SysFont('arial', 30, True)
+clock = pg.time.Clock()
+font = pg.font.SysFont('arial', 30, True)
 
 # draw main scene
-screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption('Barbie')
+screen = pg.display.set_mode((W, H))
+pg.display.set_caption('Barbie')
 
 # button draw
 easy_btn = Button((133, 200), (200, H // 2), 'Easy', GREEN)
@@ -39,42 +39,42 @@ normal_btn = Button((133, 200), (W // 2, H // 2), 'Normal', ORANGE)
 normal_btn.draw(screen)
 hard_btn = Button((133, 200), (W - 200, H // 2), 'Dior', RED)
 hard_btn.draw(screen)
-pygame.display.flip()
+pg.display.flip()
 
 # sky
-sky = pygame.image.load('images/background.jpg').convert()
-sky = pygame.transform.scale(sky, (W, H))
+sky = pg.image.load('images/background.jpg').convert()
+sky = pg.transform.scale(sky, (W, H))
 
 # ground
-ground = pygame.image.load('images/dirt.jpg').convert()
-ground = pygame.transform.scale(ground, (W, 100))
+ground = pg.image.load('images/dirt.jpg').convert()
+ground = pg.transform.scale(ground, (W, 100))
 rect_ground = ground.get_rect(bottom=H)
 
 # score
-score = pygame.image.load('images/score.png').convert_alpha()
-score = pygame.transform.scale(score, (200, 100))
+score = pg.image.load('images/score.png').convert_alpha()
+score = pg.transform.scale(score, (200, 100))
 
 # create hero
 hero = Hero(W // 2, H - 100, 'barbie.png')
 
 # game over
-game_over = pygame.image.load("images/over.png").convert_alpha()
+game_over = pg.image.load("images/over.png").convert_alpha()
 
 # sounds
-main_theme = pygame.mixer.Sound('sounds/dior.wav')
-game_over_sound = pygame.mixer.Sound('sounds/opa.wav')
+main_theme = pg.mixer.Sound('sounds/dior.wav')
+game_over_sound = pg.mixer.Sound('sounds/opa.wav')
 game_over_sound.set_volume(0.2)
 main_theme.set_volume(0.1)
 
 # create balls group
-balls = pygame.sprite.Group()
+balls = pg.sprite.Group()
 
 
 def createBall(group, min_speed, max_speed):
     x = randint(20, W - 20)
     speed = randint(min_speed, max_speed)
-    surf = pygame.image.load('images/ken.png').convert_alpha()
-    surf = pygame.transform.scale(surf, (100, 276))  # 172x470
+    surf = pg.image.load('images/ken.png').convert_alpha()
+    surf = pg.transform.scale(surf, (100, 276))  # 172x470
     return Ball(x, speed, surf, group)
 
 
@@ -89,15 +89,15 @@ def collideBalls():
 
 def get_difficulty_level(choice=None):
     while choice is None:
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if easy_btn.rect.collidepoint(pygame.mouse.get_pos()):
+        for event in pg.event.get():
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if easy_btn.rect.collidepoint(pg.mouse.get_pos()):
                     choice = easy_btn.on_click()
-                elif normal_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                elif normal_btn.rect.collidepoint(pg.mouse.get_pos()):
                     choice = normal_btn.on_click()
-                elif hard_btn.rect.collidepoint(pygame.mouse.get_pos()):
+                elif hard_btn.rect.collidepoint(pg.mouse.get_pos()):
                     choice = hard_btn.on_click()
-            elif event.type == pygame.QUIT:
+            elif event.type == pg.QUIT:
                 exit()
     difficulty_dict = {
         'Easy': {'speed': 10, 'hearts': 5},
@@ -117,12 +117,12 @@ hearts_list = hero.get_hearts_list()
 main_theme.play(loops=-1)
 # isRun = True
 while True:  # isRun:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
             exit()
             # pygame.quit()
             # isRun = False
-        elif event.type == pygame.USEREVENT:
+        elif event.type == pg.USEREVENT:
             createBall(balls, min_speed, max_speed)
     if len(hearts_list) == 0:
         over_x = screen.get_rect().center[0] - game_over.get_width() // 2
@@ -133,18 +133,18 @@ while True:  # isRun:
         over_text_y = game_over.get_rect().bottom + 100
         screen.blit(game_over, (over_x, over_y))
         screen.blit(over_text, (over_text_x, over_text_y))
-        pygame.display.flip()  # Add this.
+        pg.display.flip()  # Add this.
         main_theme.stop()
         game_over_sound.play()
         time.sleep(3)
         os._exit(1)
-        pygame.quit()
+        pg.quit()
     if game_score == tmp_score + 400:
         min_speed += 1
         max_speed += 2
         tmp_score = game_score
         hero.speed_up()
-    keys = pygame.key.get_pressed()
+    keys = pg.key.get_pressed()
     # mouse_click = pygame.mouse.get_pressed(3)
 
     screen.blit(sky, (0, 0))
@@ -165,5 +165,5 @@ while True:  # isRun:
     balls.update(hearts_list, H)
     collideBalls()
 
-    pygame.display.update()
+    pg.display.update()
     clock.tick(FPS)

@@ -11,10 +11,10 @@ class Ball(pygame.sprite.Sprite):
         self.off = pygame.mixer.Sound('sounds/oof.wav')
         self.off.set_volume(0.5)
 
-    def update(self, heats, *args):
+    def update(self, hearts, *args):
         if self.rect.y < args[0] - 20:
             self.rect.y += self.speed
         else:
             self.kill()
             self.off.play()
-            heats.pop()
+            hearts.pop()
