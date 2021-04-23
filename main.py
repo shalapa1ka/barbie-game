@@ -1,9 +1,11 @@
 import pygame as pg
+import json
 import time
-import os
+import datetime as dt
 from hero import Hero
 from ball import Ball
 from button import Button
+from input import InputBox
 from random import randint
 
 # const
@@ -27,6 +29,11 @@ min_speed = 1
 max_speed = 3
 clock = pg.time.Clock()
 font = pg.font.SysFont('arial', 30, True)
+player = {
+    'date': '',
+    'name': '',
+    'score': 0,
+}
 
 # draw main scene
 screen = pg.display.set_mode((W, H))
@@ -39,7 +46,11 @@ normal_btn = Button((133, 200), (W // 2, H // 2), 'Normal', ORANGE)
 normal_btn.draw(screen)
 hard_btn = Button((133, 200), (W - 200, H // 2), 'Dior', RED)
 hard_btn.draw(screen)
-pg.display.flip()
+buttons = [easy_btn, normal_btn, hard_btn]
+
+# nameBox
+nameBox = InputBox(W // 2 - 70, 200, 140, 40)
+txt_name = font.render('Enter your name', True, WHITE)
 
 # sky
 sky = pg.image.load('images/background.jpg').convert()
@@ -87,18 +98,28 @@ def collideBalls():
             ball.kill()
 
 
-def get_difficulty_level(choice=None):
-    while choice is None:
+def get_difficulty_level():
+    done = False
+    while not done:
         for event in pg.event.get():
+            nameBox.handle_event(event)
             if event.type == pg.MOUSEBUTTONDOWN:
-                if easy_btn.rect.collidepoint(pg.mouse.get_pos()):
-                    choice = easy_btn.on_click()
-                elif normal_btn.rect.collidepoint(pg.mouse.get_pos()):
-                    choice = normal_btn.on_click()
-                elif hard_btn.rect.collidepoint(pg.mouse.get_pos()):
-                    choice = hard_btn.on_click()
+                for button in buttons:
+                    if button.rect.collidepoint(event.pos):
+                        choice = button.name
+                        done = True
             elif event.type == pg.QUIT:
                 exit()
+        screen.fill((30, 30, 30))
+        screen.blit(txt_name, (W // 2 - txt_name.get_width() // 2, 150))
+        for button in buttons:
+            button.draw(screen)
+        nameBox.update(screen)
+        nameBox.draw(screen)
+        pg.display.update()
+
+    player['name'] = nameBox.get_name()
+    player['date'] = dt.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
     difficulty_dict = {
         'Easy': {'speed': 10, 'hearts': 5},
         'Normal': {'speed': 7, 'hearts': 3},
@@ -109,6 +130,7 @@ def get_difficulty_level(choice=None):
     return speed, hearts
 
 
+pg.display.update()
 # set hero speed and lives
 hero.set_difficulty(*get_difficulty_level())
 
@@ -125,10 +147,11 @@ while True:  # isRun:
         elif event.type == pg.USEREVENT:
             createBall(balls, min_speed, max_speed)
     if len(hearts_list) == 0:
+        player['score'] = game_score
         over_x = screen.get_rect().center[0] - game_over.get_width() // 2
         over_y = screen.get_rect().center[1] - game_over.get_height() // 2
         screen.fill(BLACK)
-        over_text = font.render("Your score = " + str(game_score), True, WHITE)
+        over_text = font.render(player['name'] + " score = " + str(game_score), True, WHITE)
         over_text_x = screen.get_rect().center[0] - over_text.get_width() // 2
         over_text_y = game_over.get_rect().bottom + 100
         screen.blit(game_over, (over_x, over_y))
@@ -136,9 +159,11 @@ while True:  # isRun:
         pg.display.flip()  # Add this.
         main_theme.stop()
         game_over_sound.play()
+        with open('results.txt', 'a') as f:
+            json.dump(player, f)
+            f.write('\n')
         time.sleep(3)
-        os._exit(1)
-        pg.quit()
+        exit()
     if game_score == tmp_score + 400:
         min_speed += 1
         max_speed += 2
