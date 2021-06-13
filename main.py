@@ -7,7 +7,7 @@ from ball import Ball
 from button import Button
 from input import InputBox
 from random import randint
-
+from mysql.connector import connect, Error
 
 # const
 FPS = 120
@@ -155,13 +155,38 @@ while isRun:  # isRun:
         over_text_y = game_over.get_rect().bottom - 50
         screen.blit(game_over, (over_x, over_y))
         screen.blit(over_text, (over_text_x, over_text_y))
-        pg.display.flip()  # Add this.
         main_theme.stop()
         game_over_sound.play()
-        with open('results.txt', 'a') as f:
-            json.dump(player, f)
-            f.write('\n')
-        time.sleep(3)
+        player_score_list = []
+        try:
+            with connect(
+                    host="localhost",
+                    user='root',
+                    password='',
+            ) as connection:
+                use_barbie = "USE barbie"
+                insert_current_result = "insert into player_results(date, name, score)" \
+                                        "VALUES (%s, %s, %s) "
+                values = (player['date'], player['name'], player['score'])
+                select_list = "select date, name, score from player_results order by score DESC limit 10"
+                with connection.cursor() as cursor:
+                    cursor.execute(use_barbie)
+                    cursor.execute(insert_current_result, values)
+                    connection.commit()
+                    cursor.execute(select_list)
+                    i = 0
+                    bias = 50
+                    for item in cursor:
+                        row_text = item[0] + " " + item[1] + "  " + str(item[2])
+                        row_text = font.render(str(row_text), True, WHITE)
+                        row_x = screen.get_rect().center[0] - row_text.get_width() // 2 + 10
+                        row_y = 400 + bias * i
+                        screen.blit(row_text, (row_x, row_y))
+                        i += 1
+                    pg.display.flip()
+        except Error as e:
+            print(e)
+        time.sleep(10)
         isRun = False
     if game_score == tmp_score + 400:
         min_speed += 1
