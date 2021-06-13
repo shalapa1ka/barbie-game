@@ -29,7 +29,7 @@ class InputBox:
                 if event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
-                    self.text += event.unicode
+                    self.text += str(event.unicode)
                 # Re-render the text.
                 self.txt_surface = FONT.render(self.text, True, self.color)
 

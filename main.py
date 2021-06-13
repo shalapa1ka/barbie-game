@@ -8,6 +8,7 @@ from button import Button
 from input import InputBox
 from random import randint
 
+
 # const
 FPS = 120
 TIME = 2000
@@ -72,7 +73,7 @@ hero = Hero(W // 2, H - 100, 'barbie.png')
 game_over = pg.image.load("images/over.png").convert_alpha()
 
 # sounds
-main_theme = pg.mixer.Sound('sounds/dior.wav')
+main_theme = pg.mixer.Sound('sounds/show.wav')
 game_over_sound = pg.mixer.Sound('sounds/opa.wav')
 game_over_sound.set_volume(0.2)
 main_theme.set_volume(0.1)
@@ -123,22 +124,20 @@ def get_difficulty_level():
     difficulty_dict = {
         'Easy': {'speed': 10, 'hearts': 5},
         'Normal': {'speed': 7, 'hearts': 3},
-        'Dior': {'speed': 5, 'hearts': 1}
+        'Dior': {'speed': 5, 'hearts': 0}
     }
     speed = difficulty_dict[choice]['speed']
     hearts = difficulty_dict[choice]['hearts']
     return speed, hearts
 
 
-pg.display.update()
 # set hero speed and lives
 hero.set_difficulty(*get_difficulty_level())
-
 hearts_list = hero.get_hearts_list()
 
 main_theme.play(loops=-1)
-# isRun = True
-while True:  # isRun:
+isRun = True
+while isRun:  # isRun:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
@@ -149,11 +148,11 @@ while True:  # isRun:
     if len(hearts_list) == 0:
         player['score'] = game_score
         over_x = screen.get_rect().center[0] - game_over.get_width() // 2
-        over_y = screen.get_rect().center[1] - game_over.get_height() // 2
+        over_y = 200
         screen.fill(BLACK)
         over_text = font.render(player['name'] + " score = " + str(game_score), True, WHITE)
         over_text_x = screen.get_rect().center[0] - over_text.get_width() // 2
-        over_text_y = game_over.get_rect().bottom + 100
+        over_text_y = game_over.get_rect().bottom - 50
         screen.blit(game_over, (over_x, over_y))
         screen.blit(over_text, (over_text_x, over_text_y))
         pg.display.flip()  # Add this.
@@ -163,7 +162,7 @@ while True:  # isRun:
             json.dump(player, f)
             f.write('\n')
         time.sleep(3)
-        exit()
+        isRun = False
     if game_score == tmp_score + 400:
         min_speed += 1
         max_speed += 2
